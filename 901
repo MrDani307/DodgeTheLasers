@@ -5,16 +5,11 @@ local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 local localPlayer = Players.LocalPlayer
 
--- ═══════════════════════════════════════════
---  GUI С ПРОКРУТКОЙ (SCROLLING FRAME)
--- ═══════════════════════════════════════════
-
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Parent = game:GetService("CoreGui")
 ScreenGui.ResetOnSpawn = false
 ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
--- Основной фрейм — фиксированного размера, не растягивается
 local Frame = Instance.new("Frame")
 Frame.Parent = ScreenGui
 Frame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
@@ -34,7 +29,6 @@ OuterStroke.Color = Color3.fromRGB(255, 255, 255)
 OuterStroke.Thickness = 1.2
 OuterStroke.Transparency = 0.4
 
--- Декор-подсветка сверху
 local Highlight = Instance.new("Frame")
 Highlight.Parent = Frame
 Highlight.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
@@ -46,7 +40,6 @@ local HCorner = Instance.new("UICorner")
 HCorner.CornerRadius = UDim.new(1, 0)
 HCorner.Parent = Highlight
 
--- Заголовок (за него таскаем окно)
 local Title = Instance.new("TextLabel")
 Title.Parent = Frame
 Title.BackgroundTransparency = 1
@@ -59,7 +52,6 @@ Title.TextSize = 15
 Title.TextXAlignment = Enum.TextXAlignment.Center
 Title.Active = true
 
--- Кнопка сворачивания
 local ToggleBtn = Instance.new("TextButton")
 ToggleBtn.Parent = Frame
 ToggleBtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
@@ -76,7 +68,6 @@ local TCorner = Instance.new("UICorner")
 TCorner.CornerRadius = UDim.new(1, 0)
 TCorner.Parent = ToggleBtn
 
--- Разделитель
 local Divider = Instance.new("Frame")
 Divider.Parent = Frame
 Divider.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
@@ -84,10 +75,6 @@ Divider.BackgroundTransparency = 0.7
 Divider.Position = UDim2.new(0, 12, 0, 36)
 Divider.Size = UDim2.new(1, -24, 0, 1)
 Divider.BorderSizePixel = 0
-
--- ═══════════════════════════════════════════
---  SCROLLING FRAME — прокручиваемая область
--- ═══════════════════════════════════════════
 
 local ScrollFrame = Instance.new("ScrollingFrame")
 ScrollFrame.Parent = Frame
@@ -114,10 +101,6 @@ ScrollPadding.PaddingLeft = UDim.new(0, 10)
 ScrollPadding.PaddingRight = UDim.new(0, 10)
 ScrollPadding.PaddingTop = UDim.new(0, 6)
 ScrollPadding.PaddingBottom = UDim.new(0, 10)
-
--- ═══════════════════════════════════════════
---  КАСТОМНЫЙ DRAG (за заголовок)
--- ═══════════════════════════════════════════
 
 local dragging, dragInput, dragStart, startPos
 
@@ -151,10 +134,6 @@ UserInputService.InputChanged:Connect(function(input)
 		)
 	end
 end)
-
--- ═══════════════════════════════════════════
---  ФАБРИКА КНОПОК (внутри ScrollFrame)
--- ═══════════════════════════════════════════
 
 local function makeButton(parent, text, h)
 	local btn = Instance.new("TextButton")
@@ -201,15 +180,10 @@ local function makeButton(parent, text, h)
 	return btn, stroke
 end
 
--- ═══════════════════════════════════════════
---  ОСНОВНЫЕ КНОПКИ
--- ═══════════════════════════════════════════
-
 local MainButton, MainStroke    = makeButton(ScrollFrame, "⚡  Ignore Lasers", 42)
 local ColorToggleBtn, _         = makeButton(ScrollFrame, "🎨  Color", 32)
 local SettingsToggleBtn, _      = makeButton(ScrollFrame, "⚙️  Settings", 32)
 
--- Индикатор цвета лазера
 local ColorDot = Instance.new("Frame")
 ColorDot.Parent = ColorToggleBtn
 ColorDot.BackgroundColor3 = Color3.fromRGB(160, 20, 20)
@@ -229,10 +203,6 @@ CDStroke.Transparency = 0.4
 local function updateColorDot(color)
 	TweenService:Create(ColorDot, TweenInfo.new(0.2), {BackgroundColor3 = color}):Play()
 end
-
--- ═══════════════════════════════════════════
---  ПАЛИТРА ЦВЕТОВ
--- ═══════════════════════════════════════════
 
 local ALL_COLORS = {
 	Color3.fromRGB(255,50,50),   Color3.fromRGB(255,120,30),
@@ -262,7 +232,6 @@ local function buildPalette(parentFrame, onColorPicked)
 	container.Visible = false
 	container.ClipsDescendants = true
 
-	-- Кнопка Rainbow
 	local rbBtn = Instance.new("TextButton")
 	rbBtn.Parent = container
 	rbBtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
@@ -295,7 +264,6 @@ local function buildPalette(parentFrame, onColorPicked)
 		end
 	end)
 
-	-- Стрелки
 	local arrowL = Instance.new("TextButton")
 	arrowL.Parent = container
 	arrowL.BackgroundColor3 = Color3.fromRGB(255,255,255)
@@ -394,12 +362,7 @@ local function buildPalette(parentFrame, onColorPicked)
 	return container, rbBtn, colorBtns
 end
 
--- Палитра лазера (внутри ScrollFrame)
 local PaletteFrame, RainbowBtn, colorButtons = buildPalette(ScrollFrame, nil)
-
--- ═══════════════════════════════════════════
---  НАСТРОЙКИ
--- ═══════════════════════════════════════════
 
 local SettingsFrame = Instance.new("Frame")
 SettingsFrame.Parent = ScrollFrame
@@ -421,7 +384,6 @@ local function makeLabel(parent, text, posY)
 	return lbl
 end
 
--- activeSlider хранит текущий перетаскиваемый слайдер
 local activeSlider = nil
 
 UserInputService.InputChanged:Connect(function(i)
@@ -534,7 +496,6 @@ local function applyGuiColor(color)
 	TweenService:Create(GuiColorDot, TweenInfo.new(0.2), {BackgroundColor3 = color}):Play()
 end
 
--- Палитра GUI-цвета
 local GuiPaletteOpen = false
 
 local GuiColorToggleBtn = Instance.new("TextButton")
@@ -565,11 +526,9 @@ GuiColorToggleBtn.InputEnded:Connect(function(i)
 	end
 end)
 
--- Палитра GUI внутри SettingsFrame
 local GuiPaletteContainer, GuiRainbowBtn, guiColorButtons = buildPalette(SettingsFrame, nil)
 GuiPaletteContainer.Position = UDim2.new(0, 0, 0, 182)
 
--- Обновляем высоту SettingsFrame в зависимости от содержимого
 local function updateSettingsHeight()
 	local h = 296
 	if GuiPaletteOpen then
@@ -582,7 +541,6 @@ local function updateSettingsHeight()
 end
 updateSettingsHeight()
 
--- Reset Position
 local ResetPosBtn = Instance.new("TextButton")
 ResetPosBtn.Parent = SettingsFrame
 ResetPosBtn.BackgroundColor3 = Color3.fromRGB(255,255,255)
@@ -603,10 +561,6 @@ ResetPosBtn.MouseButton1Click:Connect(function()
 		Position = UDim2.new(0.05, 0, 0.35, 0)
 	}):Play()
 end)
-
--- ═══════════════════════════════════════════
---  УПРАВЛЕНИЕ ПАНЕЛЯМИ (TOGGLE / ANIMATION)
--- ═══════════════════════════════════════════
 
 local paletteOpen  = false
 local settingsOpen = false
@@ -630,7 +584,6 @@ local function animatePanel(panel, opening, baseY)
 	end
 end
 
--- Высота Frame сворачивается/разворачивается
 ToggleBtn.MouseButton1Click:Connect(function()
 	collapsed = not collapsed
 	if collapsed then
@@ -674,10 +627,6 @@ GuiColorToggleBtn.MouseButton1Click:Connect(function()
 	GuiColorToggleBtn.Text = GuiPaletteOpen and "🎨  Hide GUI Colors" or "🎨  Pick GUI Color"
 end)
 
--- ═══════════════════════════════════════════
---  ЛОГИКА ЛАЗЕРОВ (без изменений)
--- ═══════════════════════════════════════════
-
 local isActive          = false
 local rainbowMode       = false
 local cloneColor        = Color3.fromRGB(160, 20, 20)
@@ -694,7 +643,6 @@ local WAVE_THRESHOLD = 5
 
 local clonePartCache = {}
 
--- Rainbow-циклы: лазер и GUI
 task.spawn(function()
 	while true do
 		if rainbowMode then
@@ -887,7 +835,6 @@ local function cleanUp()
 	table.clear(clonePartCache)
 end
 
--- Пульсация подсветки
 task.spawn(function()
 	while true do
 		TweenService:Create(Highlight, TweenInfo.new(2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {BackgroundTransparency = 0.85}):Play()
@@ -896,10 +843,6 @@ task.spawn(function()
 		task.wait(2)
 	end
 end)
-
--- ═══════════════════════════════════════════
---  ОБРАБОТЧИКИ КНОПОК ЦВЕТА
--- ═══════════════════════════════════════════
 
 RainbowBtn.MouseButton1Click:Connect(function()
 	rainbowMode = not rainbowMode
@@ -936,10 +879,6 @@ for _, entry in ipairs(guiColorButtons) do
 		applyGuiColor(entry.color)
 	end)
 end
-
--- ═══════════════════════════════════════════
---  ГЛАВНАЯ КНОПКА
--- ═══════════════════════════════════════════
 
 MainButton.MouseButton1Click:Connect(function()
 	if not isActive then
